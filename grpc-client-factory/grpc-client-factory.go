@@ -14,24 +14,14 @@
  * limitations under the License.
  */
 
-package StarterGrpcClient
+package GrpcClientFactory
 
 import (
-	"fmt"
-
-	"github.com/go-spring/spring-boot"
-	"github.com/go-spring/spring-core"
-	"github.com/go-spring/starter-grpc-client/grpc-client-factory"
+	"github.com/go-spring/starter-grpc"
+	"google.golang.org/grpc"
 )
 
-// NOTE: 为了避免该变量被导出，所以使用了小写模式。
-const grpc_endpoint_prefix = "grpc.endpoint"
-
-func init() {
-	SpringBoot.AfterPrepare(func(ctx SpringCore.SpringContext) {
-		for endpoint := range ctx.GetGroupedProperties(grpc_endpoint_prefix) {
-			tag := fmt.Sprintf("${%s.%s}", grpc_endpoint_prefix, endpoint)
-			ctx.RegisterNameBeanFn(endpoint, GrpcClientFactory.NewClientConnInterface, tag)
-		}
-	})
+// NewClientConnInterface 根据配置创建 grpc.ClientConnInterface 对象
+func NewClientConnInterface(config StarterGrpc.EndpointConfig) (grpc.ClientConnInterface, error) {
+	return grpc.Dial(config.Address, grpc.WithInsecure())
 }
